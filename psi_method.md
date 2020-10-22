@@ -22,6 +22,7 @@ The first stimulation is choosen as the median value of the alpha vector then fo
 informatio gained disregardng if the subject precives the stimulation or not. The algoritm will continoue untill the the number of maximum trials has 
 been preformed, which is predefined in the protocol file.
 
+[Back to index](index.html)
 
 ## Required instruments
 
@@ -232,13 +233,13 @@ elow is a description of each individual parameter in the Psi algorithm method i
 
 |Parameter|Type|Description|
 |----------------|----|-----------|
-|alpha      |vector   | Threshold |       
-|geta       |vector   |  Slope rate  |
-|gamma      |integer  |  Guessing rate    |
-|lambda     |integer  |  Lapsing rate    |
-|intensity  | vector  | The possible stimulations. Note that this vector is scaled with the Imult to generate the possible stimulations intensity|
-|Trials     | integer | How many stim
-|Imax       | integer | The maximum intensity
+|alpha      |vector   | possible threshold for the phycometric function space  |       
+|geta       |vector   | possible slope rate for the phycometric function space |
+|gamma      |integer  | guessing rate for the phycometric function space   |
+|lambda     |integer  | lapsing rate for the phycometric function space   |
+|intensity  | vector  | Normalized possible stimulations intensities. Note that this vector is scaled with the Imult to generate the possible stimulations intensity|
+|Trials     | integer | Number stimulation before the algorithm stops|
+|Imax       | integer | The maximum intensity|
 
 Below is a description of each individual parameter in the UP/DOWN algrorithm in the test setup.
 
