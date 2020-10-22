@@ -234,7 +234,7 @@ elow is a description of each individual parameter in the Psi algorithm method i
 |Parameter|Type|Description|
 |----------------|----|-----------|
 |alpha      |vector   | possible threshold for the phycometric function space  |       
-|geta       |vector   | possible slope rate for the phycometric function space |
+|beta       |vector   | possible slope rate for the phycometric function space |
 |gamma      |integer  | guessing rate for the phycometric function space   |
 |lambda     |integer  | lapsing rate for the phycometric function space   |
 |intensity  | vector  | Normalized possible stimulations intensities. Note that this vector is scaled with the Imult to generate the possible stimulations intensity|
