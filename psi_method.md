@@ -11,22 +11,14 @@ information gained from each presentation of a stimulus to the subject.
 
 ## Description 
 
-The psi method defines a space of possible psychmetric function defined by the four papmeters:
-| Name      |  Interface        | Type |
-|-----------|-------------------|-------|
-|Alpha      |  Threshold        |Vector |
-|Beta       |  Slope rate       |Vector |
-|Gamma      |  Guessing rate    |Integer |
-|Lambda      |  Lapsing rate     |Integer |
-
-The accuracy of the estimated threshold will depend of the size of vectors alpha and beta therefore choos these valuble with care. 
-The alpha vector is scaled with the interger paramter "Imax" wich difines the maximum allowed current intestity for that threshold estimation.
-Also the Imax value need to be defined with care since elctrical timulatio treshold may differs significantly by different stimulation shapes, 
-subjects and placement of the body. A god stragegy is to prior to  the Psi method roughly estimate the threshold by the up and down method. 
+The psi method defines a space of possible psychmetric function defined by the the four papmeters: alpha (threshold), besta(slope rate), gamma (guessing rate), lambda (lapsing rate). The accuracy of the estimated threshold will depend of the size of vectors alpha and beta therefore choose these valuble with care. 
+The alpha vector is scaled with the interger paramter "Imax", wich difines the maximum allowed current intestity for that threshold estimation.
+Also the Imax value need to be defined with care since electrical  stimulation tresholds may differs significantly by different electrical stimulation shapes, 
+subjects and placement of the electrode on the body. A god stragegy is to prior to the Psi method roughly estimate the threshold by the UP/DOWN method (see thew example below). 
 The Psi algorithm uses an look up table for the probablitiy of preciving a specific stimulation for all possible phucametric function defines by 
 the four phycometric function.  
 
-The first stimulation is choosen the median value of the alpha vector then following stimulation intensity id choosen to maixize the expected 
+The first stimulation is choosen as the median value of the alpha vector then following stimulation intensity id choosen to maixize the expected 
 informatio gained disregardng if the subject precives the stimulation or not. The algoritm will continoue untill the the number of maximum trials has 
 been preformed, which is predefined in the protocol file.
 
@@ -57,7 +49,11 @@ In the xml snippet below it is illustrated how these instruments can be defined 
           name="Example_prot"
           version="1.0.0">
           <description>
-            This is a Example protocol
+            This is a Example protocol.
+                    Two elctrical test stimulation threshold will be evaluated. 
+                    The stimulation is preformed with random inersimulus interavls beween 2000ms to 3000ms
+                    First a rough estimation of the treshold is preforemed with the UP/DOWN method in order to estimat the Imax value.
+                    Secondly the Psi method is estimation the threshold by 30 trials.  
           </description>
 
   <defines>
@@ -107,14 +103,14 @@ In the xml snippet below it is illustrated how these instruments can be defined 
              channel-type="single-sample"
              trigger="1"
              channel="0"
-             name="sqt_FE_-0.2_0.5_10_"
+             name="Test stimulus 1"
              Imax="Stimulator.Imax">
       <up-down-method down-rule="1"
                       up-rule="3"
                       max-intensity="1"
                       min-intensity="0"
                       skip-rule="0"
-                      start-intensity="0.005"
+                      start-intensity="0.005/Stimulator.Imax"
                       step-size-up="0.25"
                       step-size-down="0.25"
                       step-size-type="relative"
@@ -139,14 +135,14 @@ In the xml snippet below it is illustrated how these instruments can be defined 
              channel-type="single-sample"
              trigger="1"
              channel="0"
-             name="sqt_FE_-0.2_0.5_50_"
+             name="Test stimulus 1"
              Imax="Stimulator.Imax">
       <up-down-method down-rule="1"
                       up-rule="3"
                       max-intensity="1"
                       min-intensity="0"
                       skip-rule="SkipRule"
-                      start-intensity="TEST['C01']/Stimulator.Imax"
+                      start-intensity="0.005/Stimulator.Imax"
                       step-size-up="StepSize"
                       step-size-down="StepSize"
                       step-size-type="relative"
@@ -182,7 +178,7 @@ In the xml snippet below it is illustrated how these instruments can be defined 
                  channel-type="single-sample"
                  trigger="1"
                  channel="0"
-                 name="Stim1"
+                 name="Test stimulus 1"
                  Imax="Imult * PsiS['C01'] if Imult * PsiS['C01'] &lt; Stimulator.Imax else Stimulator.Imax">
           <channel-dependencies>
           </channel-dependencies>
@@ -206,7 +202,7 @@ In the xml snippet below it is illustrated how these instruments can be defined 
                  channel-type="single-sample"
                  trigger="1"
                  channel="0"
-                 name="Stim1"
+                 name="Test stimulus 2"
                  Imax="Imult * PsiS['C02'] if Imult * PsiS['C02'] &lt; Stimulator.Imax else Stimulator.Imax">
           <channel-dependencies>
           </channel-dependencies>
@@ -232,7 +228,19 @@ In the xml snippet below it is illustrated how these instruments can be defined 
      
 ```
 
-Below is a description of each individual parameter in the test setup.
+elow is a description of each individual parameter in the Psi algorithm method in the test setup.
+
+|Parameter|Type|Description|
+|----------------|----|-----------|
+|alpha      |vector   | Threshold |       
+|geta       |vector   |  Slope rate  |
+|gamma      |integer  |  Guessing rate    |
+|lambda     |integer  |  Lapsing rate    |
+|intensity  | vector  | The possible stimulations. Note that this vector is scaled with the Imult to generate the possible stimulations intensity|
+|Trials     | integer | How many stim
+|Imax       | integer | The maximum intensity
+
+Below is a description of each individual parameter in the UP/DOWN algrorithm in the test setup.
 
 |Parameter|Type|Description|
 |----------------|----|-----------|
@@ -253,5 +261,8 @@ Below is a description of each individual parameter in the test setup.
 [Back to index](index.html)
 
 ### Psi Estimation Algorithm
+
+beta type="linspace" base="10" x0="-1.2041" x1="1.2041" n="20"/>
+            <alpha
 
 [Back to index](index.html)
