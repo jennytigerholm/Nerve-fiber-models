@@ -206,10 +206,3 @@ Below is a description of each individual parameter in the UP/DOWN algrorithm in
 | stop-rule | integer | Number of stimulations (stop-criterion = trials) or reversals (stop-criterion = reversals) when the test will terminate |
 
 [Back to index](index.html)
-
-### Psi Estimation Algorithm
-
-beta type="linspace" base="10" x0="-1.2041" x1="1.2041" n="20"/>
-            <alpha
-
-[Back to index](index.html)
