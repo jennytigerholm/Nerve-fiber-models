@@ -45,184 +45,130 @@ In the xml snippet below it is illustrated how these instruments can be defined 
 
 <?xml version="1.0" encoding="UTF-8"?>
 <protocol xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-          xsi:schemaLocation="http://labbench.io http://labbench.io/schema/current/protocol.xsd"
-          name="Example_prot"
-          version="1.0.0">
-          <description>
-            This is a Example protocol.
-                    Two elctrical test stimulation threshold will be evaluated. 
-                    The stimulation is preformed with random inersimulus interavls beween 2000ms to 3000ms
-                    First a rough estimation of the treshold is preforemed with the UP/DOWN method in order to estimat the Imax value.
-                    Secondly the Psi method is estimation the threshold by 30 trials.  
-          </description>
-
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xsi:schemaLocation="http://labbench.io http://labbench.io/schema/current/protocol.xsd"
+  name="Example_prot"
+  version="1.0.0">
+  <description>
+    This is a Example protocol.
+    Two elctrical test stimulation threshold will be evaluated.
+    The stimulation is preformed with random inersimulus interavls beween 2000ms to 3000ms
+    First a rough estimation of the treshold is preforemed with the UP/DOWN method in order to estimat the Imax value.
+    Secondly the Psi method is estimation the threshold by 30 trials.
+  </description>
+  
   <defines>
-<!-- Stimuli -->
-
-      <define name="T1" value="0.5"/
-      <define name="T2" value="1"/>
-
-
-    <!-- Method of Limits. For more information regaring these paramter see the section in the manual for the Up-and-down method -->
-    <define name="Istart" value="0.025"/>
-    <define name="Naverage" value="1"/>
-    <define name="Ndiscard" value="1"/>
-    <define name="Ntest" value="2"/>
-    <define name="Pdecrease" value="0.2"/>
-    <define name="Pmin" value="0.05"/>
-    <define name="Pstep" value="0.2"/>
-    <define name="ReversalRule" value="3" />
-    <define name="StartIntensity" value="0.025" />
-    <define name="StepSize" value="0.25" />
-    <define name="StepSizeReduction" value="0.5" />
-    <define name="MaxStepSizeReduction" value="0.25"/>
-    <define name="SkipRule" value="0"/>
-    <define name="StopRule" value="2"/>
+    <!-- Stimuli -->
     
-    <!-- Psi Method -->
-    <define name="Trials" value="30"/>
-    <define name="Imult" value="4"/>
-    <define name="alphaX0" value="0.05"/>
-    <define name="alphaN" value="200"/>
-    <define name="intensityX0" value="0.05"/>
-    <define name="intensityN" value="100"/>
-
-
-  </defines>
-<tests>
-
-<!-- Starting values. This section generates the starting values for defining the maximum intensity-->
-<threshold-estimation ID="PsiS" name="generating start values">
-  <update-rate-random min="2000" max="3000" /> <!-- interval in ms between the stimuli-->
-  <dependencies>
-    <dependency ID="TEST"/>
-  </dependencies>
-  <yes-no-task />
-  <channels>
-    <channel ID="C01"
-             channel-type="single-sample"
-             trigger="1"
-             channel="0"
-             name="Test stimulus 1"
-             Imax="Stimulator.Imax">
-      <up-down-method down-rule="1"
-                      up-rule="3"
-                      max-intensity="1"
-                      min-intensity="0"
-                      skip-rule="0"
-                      start-intensity="0.005/Stimulator.Imax"
-                      step-size-up="0.25"
-                      step-size-down="0.25"
-                      step-size-type="relative"
-                      terminate-on-limit-reached="true"
-                      max-step-size-reduction="0.1"
-                      step-size-reduction="StepSizeReduction"
-                      stop-criterion="reversals"
-                      stop-rule="2">
-        <quick alpha="0.5" beta="1" lambda="0.02" gamma="0.0" />
-      </up-down-method>
-      <combined>
-            <!-- test pulse -->
-           <pulse Is="Is" Ts="T1" Tdelay="0"/>
-           
-           <!-- charge balancing-->
-           <pulse Is="-Is*0.2" Ts="T1*5" Tdelay="T1"/> 
-
-       </combined>
-    </channel>
-
-    <channel ID="C02"
-             channel-type="single-sample"
-             trigger="1"
-             channel="0"
-             name="Test stimulus 1"
-             Imax="Stimulator.Imax">
-      <up-down-method down-rule="1"
-                      up-rule="3"
-                      max-intensity="1"
-                      min-intensity="0"
-                      skip-rule="SkipRule"
-                      start-intensity="0.005/Stimulator.Imax"
-                      step-size-up="StepSize"
-                      step-size-down="StepSize"
-                      step-size-type="relative"
-                      terminate-on-limit-reached="true"
-                      max-step-size-reduction="MaxStepSizeReduction"
-                      step-size-reduction="StepSizeReduction"
-                      stop-criterion="reversals"
-                      stop-rule="StopRule">
-        <quick alpha="0.5" beta="1" lambda="0.02" gamma="0.0" />
-      </up-down-method>
-      <combined>
-          <!-- test pulse -->
-           <pulse Is="Is" Ts="T2" Tdelay="0"/>
-           
-           <!-- charge balancing-->
-           <pulse Is="-Is*0.2" Ts="T2*5" Tdelay="T2"/> 
-       </combined>
-    </channel>
-  </channels>
-</threshold-estimation>
-
-<!-- Psi method  1 -->
-    <threshold-estimation ID="PTT1" name="PTT five pulse shapes (Psi Estimation) 1">
-      <update-rate-random min="2000" max="3000" /> <!-- interval in ms between the stimuli-->
-      <dependencies>
-        <dependency ID="PsiS"/>
-      </dependencies>
-      <yes-no-task />
-
-      <channels>
-        <!-- input 1-->
-        <channel ID="C01"
-                 channel-type="single-sample"
-                 trigger="1"
-                 channel="0"
-                 name="Test stimulus 1"
-                 Imax="Imult * PsiS['C01'] if Imult * PsiS['C01'] &lt; Stimulator.Imax else Stimulator.Imax">
-          <channel-dependencies>
-          </channel-dependencies>
-          <psi-method number-of-trials="Trials">
-            <quick alpha="0.5" beta="1" lambda="0.02" gamma="0.0" />
-            <beta type="linspace" base="10" x0="-1.2041" x1="1.2041" n="20"/>
-            <alpha type="linspace" x0="alphaX0" x1="1" n="alphaN" />
-            <intensity type="linspace" x0="intensityX0" x1="1" n="intensityN" />
-          </psi-method>
-´             <combined>
-            <!-- test pulse -->
-           <pulse Is="Is" Ts="T1" Tdelay="0"/>
-           
-           <!-- charge balancing-->
-           <pulse Is="-Is*0.2" Ts="T1*5" Tdelay="T1"/> 
-       </combined>
-        </channel>
-
-        <!-- input 2-->
-        <channel ID="C02"
-                 channel-type="single-sample"
-                 trigger="1"
-                 channel="0"
-                 name="Test stimulus 2"
-                 Imax="Imult * PsiS['C02'] if Imult * PsiS['C02'] &lt; Stimulator.Imax else Stimulator.Imax">
-          <channel-dependencies>
-          </channel-dependencies>
-          <psi-method number-of-trials="Trials">
-            <quick alpha="0.5" beta="1" lambda="0.02" gamma="0.0" />
-            <beta type="linspace" base="10" x0="-1.2041" x1="1.2041" n="20"/>
-            <alpha type="linspace" x0="alphaX0" x1="1" n="alphaN" />
-            <intensity type="linspace" x0="intensityX0" x1="1" n="intensityN" />
-          </psi-method>
+    <define name="T1" value="0.5"/
+      <define name="T2" value="1"/>
+      
+      
+      <!-- Method of Limits. For more information regaring these paramter see the section in the manual for the Up-and-down method -->
+      <define name="Istart" value="0.025"/>
+      <define name="Naverage" value="1"/>
+      <define name="Ndiscard" value="1"/>
+      <define name="Ntest" value="2"/>
+      <define name="Pdecrease" value="0.2"/>
+      <define name="Pmin" value="0.05"/>
+      <define name="Pstep" value="0.2"/>
+      <define name="ReversalRule" value="3" />
+      <define name="StartIntensity" value="0.025" />
+      <define name="StepSize" value="0.25" />
+      <define name="StepSizeReduction" value="0.5" />
+      <define name="MaxStepSizeReduction" value="0.25"/>
+      <define name="SkipRule" value="0"/>
+      <define name="StopRule" value="2"/>
+      
+      <!-- Psi Method -->
+      <define name="Trials" value="30"/>
+      <define name="Imult" value="4"/>
+      <define name="alphaX0" value="0.05"/>
+      <define name="alphaN" value="200"/>
+      <define name="intensityX0" value="0.05"/>
+      <define name="intensityN" value="100"/>
+      
+      
+    </defines>
+    <tests>
+      
+      <!-- Starting values. This section generates the starting values for defining the maximum intensity-->
+      <threshold-estimation ID="PsiS" name="generating start values">
+        <update-rate-random min="2000" max="3000" /> <!-- interval in ms between the stimuli-->
+        <dependencies>
+          <dependency ID="TEST"/>
+        </dependencies>
+        <yes-no-task />
+        <channels>
+          <channel ID="C01"
+            channel-type="single-sample"
+            trigger="1"
+            channel="0"
+            name="Test stimulus 1"
+            Imax="Stimulator.Imax">
+            <up-down-method down-rule="1"
+              up-rule="3"
+              max-intensity="1"
+              min-intensity="0"
+              skip-rule="0"
+              start-intensity="0.005/Stimulator.Imax"
+              step-size-up="0.25"
+              step-size-down="0.25"
+              step-size-type="relative"
+              terminate-on-limit-reached="true"
+              max-step-size-reduction="0.1"
+              step-size-reduction="StepSizeReduction"
+              stop-criterion="reversals"
+              stop-rule="2">
+              <quick alpha="0.5" beta="1" lambda="0.02" gamma="0.0" />
+            </up-down-method>
             <combined>
-          <!-- test pulse -->
-           <pulse Is="Is" Ts="T2" Tdelay="0"/>
-           
-           <!-- charge balancing-->
-           <pulse Is="-Is*0.2" Ts="T2*5" Tdelay="T2"/> 
-       </combined>
-      </channel>
-  </threshold-estimation>
-
+              <!-- test pulse -->
+              <pulse Is="Is" Ts="T1" Tdelay="0"/>
+              
+              <!-- charge balancing-->
+              <pulse Is="-Is*0.2" Ts="T1*5" Tdelay="T1"/>
+              
+            </combined>
+          </channel>
+        </channels>
+      </threshold-estimation>
+      
+      <!-- Psi method  1 -->
+      <threshold-estimation ID="PTT1" name="PTT five pulse shapes (Psi Estimation) 1">
+        <update-rate-random min="2000" max="3000" /> <!-- interval in ms between the stimuli-->
+        <dependencies>
+          <dependency ID="PsiS"/>
+        </dependencies>
+        <yes-no-task />
+        
+        <channels>
+          <!-- input 1-->
+          <channel ID="C01"
+            channel-type="single-sample"
+            trigger="1"
+            channel="0"
+            name="Test stimulus 1"
+            Imax="Imult * PsiS['C01'] if Imult * PsiS['C01'] &lt; Stimulator.Imax else Stimulator.Imax">
+            <channel-dependencies>
+            </channel-dependencies>
+            <psi-method number-of-trials="Trials">
+              <quick alpha="0.5" beta="1" lambda="0.02" gamma="0.0" />
+              <beta type="linspace" base="10" x0="-1.2041" x1="1.2041" n="20"/>
+              <alpha type="linspace" x0="alphaX0" x1="1" n="alphaN" />
+              <intensity type="linspace" x0="intensityX0" x1="1" n="intensityN" />
+            </psi-method>
+            ´             <combined>
+            <!-- test pulse -->
+            <pulse Is="Is" Ts="T1" Tdelay="0"/>
+            
+            <!-- charge balancing-->
+            <pulse Is="-Is*0.2" Ts="T1*5" Tdelay="T1"/>
+          </combined>
+        </channel>
+      </channels>
+    </threshold-estimation>
+    
   </tests>
 </protocol>
 
