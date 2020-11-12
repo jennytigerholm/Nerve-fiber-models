@@ -50,36 +50,14 @@ In the xml snippet below it is illustrated how these instruments can be defined 
   name="Example_prot"
   version="1.0.0">
   <description>
-    This is a Example protocol.
-    Two elctrical test stimulation threshold will be evaluated.
-    The stimulation is preformed with random inersimulus interavls beween 2000ms to 3000ms
-    First a rough estimation of the treshold is preforemed with the UP/DOWN method in order to estimat the Imax value.
-    Secondly the Psi method is estimation the threshold by 30 trials.
+    This is an example protocol.
+    The threshold of 1ms rectangular stimuli will be evaluated by the Psi method. The stimulation is performed with random interstimulus intervals between   
+    2000ms to 3000ms. First, a rough estimation of the threshold is performed with the UP/DOWN method to estimate the Imax value. Secondly, the Psi method is 
+    estimation the threshold by 30 trials.
   </description>
   
   <defines>
-    <!-- Stimuli -->
     
-    <define name="T1" value="0.5"/
-      <define name="T2" value="1"/>
-      
-      
-      <!-- Method of Limits. For more information regaring these paramter see the section in the manual for the Up-and-down method -->
-      <define name="Istart" value="0.025"/>
-      <define name="Naverage" value="1"/>
-      <define name="Ndiscard" value="1"/>
-      <define name="Ntest" value="2"/>
-      <define name="Pdecrease" value="0.2"/>
-      <define name="Pmin" value="0.05"/>
-      <define name="Pstep" value="0.2"/>
-      <define name="ReversalRule" value="3" />
-      <define name="StartIntensity" value="0.025" />
-      <define name="StepSize" value="0.25" />
-      <define name="StepSizeReduction" value="0.5" />
-      <define name="MaxStepSizeReduction" value="0.25"/>
-      <define name="SkipRule" value="0"/>
-      <define name="StopRule" value="2"/>
-      
       <!-- Psi Method -->
       <define name="Trials" value="30"/>
       <define name="Imult" value="4"/>
@@ -87,8 +65,7 @@ In the xml snippet below it is illustrated how these instruments can be defined 
       <define name="alphaN" value="200"/>
       <define name="intensityX0" value="0.05"/>
       <define name="intensityN" value="100"/>
-      
-      
+    
     </defines>
     <tests>
       
@@ -113,11 +90,11 @@ In the xml snippet below it is illustrated how these instruments can be defined 
               skip-rule="0"
               start-intensity="0.005/Stimulator.Imax"
               step-size-up="0.25"
-              step-size-down="0.25"
+              step-size-down="0.25"                           
               step-size-type="relative"
               terminate-on-limit-reached="true"
               max-step-size-reduction="0.1"
-              step-size-reduction="StepSizeReduction"
+              step-size-reduction="0.5"
               stop-criterion="reversals"
               stop-rule="2">
               <quick alpha="0.5" beta="1" lambda="0.02" gamma="0.0" />
@@ -127,7 +104,7 @@ In the xml snippet below it is illustrated how these instruments can be defined 
               <pulse Is="Is" Ts="T1" Tdelay="0"/>
               
               <!-- charge balancing-->
-              <pulse Is="-Is*0.2" Ts="T1*5" Tdelay="T1"/>
+              <pulse Is="-Is*0.2" Ts="1*5" Tdelay="T1"/>
               
             </combined>
           </channel>
@@ -152,18 +129,18 @@ In the xml snippet below it is illustrated how these instruments can be defined 
             Imax="Imult * PsiS['C01'] if Imult * PsiS['C01'] &lt; Stimulator.Imax else Stimulator.Imax">
             <channel-dependencies>
             </channel-dependencies>
-            <psi-method number-of-trials="Trials">
+            <psi-method number-of-trials="30">  <!-- The number of Trials --> 
               <quick alpha="0.5" beta="1" lambda="0.02" gamma="0.0" />
-              <beta type="linspace" base="10" x0="-1.2041" x1="1.2041" n="20"/>
-              <alpha type="linspace" x0="alphaX0" x1="1" n="alphaN" />
+              <beta type="linspace" base="10" x0="-1.2041" x1="1.2041" n="20"/>. <!-- Defines the beta vector, X0 = starting value, X1 end value, n= length of the vector  --> 
+              <alpha type="linspace" x0="alphaX0" x1="1" n="alphaN" /> <!-- Defines the apha vector --> 
               <intensity type="linspace" x0="intensityX0" x1="1" n="intensityN" />
             </psi-method>
             ´             <combined>
             <!-- test pulse -->
-            <pulse Is="Is" Ts="T1" Tdelay="0"/>
+            <pulse Is="Is" Ts="1" Tdelay="0"/>
             
             <!-- charge balancing-->
-            <pulse Is="-Is*0.2" Ts="T1*5" Tdelay="T1"/>
+            <pulse Is="-Is*0.2" Ts="1*5" Tdelay="T1"/>
           </combined>
         </channel>
       </channels>
